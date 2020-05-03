@@ -1,41 +1,74 @@
 package com.capstone.web.service;
 
 import com.capstone.web.dto.VideoResponseDto;
+import com.google.api.client.util.Lists;
 import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.stereotype.Service;
+import org.springframework.web.reactive.function.client.WebClient;
+import reactor.core.publisher.Mono;
 
+import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
+import java.util.stream.Collectors;
 
 @Service
-public class VideoLoadService {
+public class GCSReaderService {
 
     @Autowired
     private final Storage storage;
 
-    public VideoLoadService(Storage storage) {
+    @Autowired
+    WebClient.Builder builder;
+
+    public GCSReaderService(Storage storage) {
         this.storage = storage;
     }
 
-
-    //TODO:
-    //1. Filtering Using ContentType (VIdeo, Audio, Text)
-    //2. Make Directory Each Person
-    public void getVideos(String userName) {
+    public List<VideoResponseDto> getAllVideos(String userName) {
         Bucket bucket = storage.get(userName, Storage.BucketGetOption.fields(Storage.BucketField.values()));
-        Page<Blob> blobs = bucket.list();
-        for (Blob blob : blobs.iterateAll()) {
-            printBlobMetaData(blob);
-        }
+        return Lists.newArrayList(bucket.list().iterateAll())
+                    .stream()
+                    .filter(this::isVideo)
+                    .map(this::blobToVideoResponseDto)
+                    .collect(Collectors.toList());
     }
 
-    private void printBlobMetaData(Blob blob) {
+
+    public Mono<String> getLdaResult(String name) {
+        WebClient webClient = builder.build();
+        return webClient.get()
+                        .uri(uriBuilder -> uriBuilder.path("http://localhost:5000/lda-api")
+                                                    .queryParam("fileName", name)
+                                                    .build())
+                        .retrieve()
+                        .bodyToMono(String.class);
+    }
+
+    private VideoResponseDto blobToVideoResponseDto(Blob blob) {
+        return VideoResponseDto.builder()
+                               .name(blob.getName())
+                               .createdTime(blob.getCreateTime())
+                               .extension(getVideoExtension(blob.getContentType()))
+                               .build();
+    }
+
+    private boolean isVideo(Blob blob) {
+        return blob.getContentType().contains("video");
+    }
+
+    private String getVideoExtension(String contentType) {
+        return contentType.split("/")[1];
+    }
+
+    private void printBlobAllMetaData(Blob blob) {
         // Print blob metadata
+        System.out.println("======================================\n");
         System.out.println("Bucket: " + blob.getBucket());
         System.out.println("CacheControl: " + blob.getCacheControl());
         System.out.println("ComponentCount: " + blob.getComponentCount());
