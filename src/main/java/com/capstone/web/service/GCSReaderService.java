@@ -52,10 +52,14 @@ public class GCSReaderService {
 
     private VideoResponseDto blobToVideoResponseDto(Blob blob) {
         return VideoResponseDto.builder()
-                               .name(blob.getName())
+                               .name(getVideoName(blob.getName()))
                                .createdTime(blob.getCreateTime())
                                .extension(getVideoExtension(blob.getContentType()))
                                .build();
+    }
+
+    private String getVideoName(String name) {
+        return name.split("/")[0];
     }
 
     private boolean isVideo(Blob blob) {
