@@ -25,9 +25,21 @@ public class GCSController {
     }
 
     //GCS에서 다운 => 자르고 스크립트에 하나씩 생성
-    @GetMapping("/get-lda-result")
-    public Mono<String> getLDAResult(@RequestParam(name = "videoName") String name) {
-        return gcsReaderService.getLdaResult(name);
+    @GetMapping("/get-script-result")
+    public Mono<String> getExtractionResult(@RequestParam(name = "videoName") String name) {
+        return gcsReaderService.getExtractionResult(name);
+        //토픽 모델링으로 비디오 정보 전송
+    }
+
+    @GetMapping("/get-chat-result")
+    public Mono<String> getChatResult(@RequestParam(name = "videoName") String name) {
+        return gcsReaderService.getChatResult(name);
+        //토픽 모델링으로 비디오 정보 전송
+    }
+
+    @GetMapping("/get-decibel-result")
+    public Mono<String> getDecibelResult(@RequestParam(name = "videoName") String name) {
+        return gcsReaderService.getDecibelResult(name);
         //토픽 모델링으로 비디오 정보 전송
     }
 }

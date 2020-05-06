@@ -33,29 +33,48 @@ public class GCSReaderService {
     public List<VideoResponseDto> getAllVideos(String userName) {
         Bucket bucket = storage.get(userName, Storage.BucketGetOption.fields(Storage.BucketField.values()));
         return Lists.newArrayList(bucket.list().iterateAll())
-                    .stream()
-                    .filter(this::isVideo)
-                    .map(this::blobToVideoResponseDto)
-                    .collect(Collectors.toList());
+                .stream()
+                .filter(this::isVideo)
+                .map(this::blobToVideoResponseDto)
+                .collect(Collectors.toList());
     }
 
-
-    public Mono<String> getLdaResult(String name) {
+    public Mono<String> getExtractionResult(String name) {
         WebClient webClient = builder.build();
         return webClient.get()
-                        .uri(uriBuilder -> uriBuilder.path("http://localhost:5000/lda-api")
-                                                    .queryParam("fileName", name)
-                                                    .build())
-                        .retrieve()
-                        .bodyToMono(String.class);
+                .uri(uriBuilder -> uriBuilder.path("http://localhost:5000/script-api")
+                        .queryParam("fileName", name)
+                        .build())
+                .retrieve()
+                .bodyToMono(String.class);
+    }
+
+    public Mono<String> getChatResult(String name) {
+        WebClient webCilent = builder.build();
+        return webCilent.get()
+                .uri(uriBuilder -> uriBuilder.path("http://localhost:5000/chat-api")
+                .queryParam("fileName", name)
+                .build())
+                .retrieve()
+                .bodyToMono(String.class);
+    }
+
+    public Mono<String> getDecibelResult(String name) {
+        WebClient webCilent = builder.build();
+        return webCilent.get()
+                .uri(uriBuilder -> uriBuilder.path("http://localhost:5000/decibel-api")
+                        .queryParam("fileName", name)
+                        .build())
+                .retrieve()
+                .bodyToMono(String.class);
     }
 
     private VideoResponseDto blobToVideoResponseDto(Blob blob) {
         return VideoResponseDto.builder()
-                               .name(getVideoName(blob.getName()))
-                               .createdTime(blob.getCreateTime())
-                               .extension(getVideoExtension(blob.getContentType()))
-                               .build();
+                .name(getVideoName(blob.getName()))
+                .createdTime(blob.getCreateTime())
+                .extension(getVideoExtension(blob.getContentType()))
+                .build();
     }
 
     private String getVideoName(String name) {
