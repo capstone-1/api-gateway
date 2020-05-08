@@ -1,17 +1,19 @@
 package com.capstone.web.service;
 
+import com.capstone.web.dto.ChatResponseDto;
 import com.capstone.web.dto.VideoResponseDto;
 import com.google.api.client.util.Lists;
-import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
+import org.json.simple.parser.JSONParser;
+import org.modelmapper.ModelMapper;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -20,11 +22,11 @@ import java.util.stream.Collectors;
 @Service
 public class GCSReaderService {
 
-    @Autowired
     private final Storage storage;
 
     @Autowired
     WebClient.Builder builder;
+
 
     public GCSReaderService(Storage storage) {
         this.storage = storage;
@@ -49,25 +51,27 @@ public class GCSReaderService {
                 .bodyToMono(String.class);
     }
 
-    public Mono<String> getChatResult(String name) {
-        WebClient webCilent = builder.build();
+    public Mono<ChatResponseDto> getChatResult(String name) {
+        WebClient webCilent = builder.baseUrl("http://chathost:5000").build();
         return webCilent.get()
-                .uri(uriBuilder -> uriBuilder.path("http://localhost:5000/chat-api")
+                .uri(uriBuilder -> uriBuilder.path("/chat-api")
                 .queryParam("fileName", name)
                 .build())
+                .accept(MediaType.ALL)
                 .retrieve()
-                .bodyToMono(String.class);
+                .bodyToMono(ChatResponseDto.class).log();
     }
 
-    public Mono<String> getDecibelResult(String name) {
-        WebClient webCilent = builder.build();
-        return webCilent.get()
-                .uri(uriBuilder -> uriBuilder.path("http://localhost:5000/decibel-api")
-                        .queryParam("fileName", name)
-                        .build())
-                .retrieve()
-                .bodyToMono(String.class);
-    }
+
+//    public Mono<String> getDecibelResult(String name) {
+//        WebClient webCilent = builder.build();
+//        return webCilent.get()
+//                .uri(uriBuilder -> uriBuilder.path("http://localhost:5000/decibel-api")
+//                        .queryParam("fileName", name)
+//                        .build())
+//                .retrieve()
+//                .bodyToMono(String.class);
+//    }
 
     private VideoResponseDto blobToVideoResponseDto(Blob blob) {
         return VideoResponseDto.builder()

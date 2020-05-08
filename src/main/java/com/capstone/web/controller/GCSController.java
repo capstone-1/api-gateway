@@ -1,9 +1,9 @@
 package com.capstone.web.controller;
 
+import com.capstone.web.dto.ChatResponseDto;
 import com.capstone.web.dto.VideoResponseDto;
 import com.capstone.web.service.GCSReaderService;
 import org.springframework.web.bind.annotation.GetMapping;
-import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.RequestParam;
 import org.springframework.web.bind.annotation.RestController;
 import reactor.core.publisher.Mono;
@@ -32,16 +32,16 @@ public class GCSController {
     }
 
     @GetMapping("/get-chat-result")
-    public Mono<String> getChatResult(@RequestParam(name = "videoName") String name) {
+    public Mono<ChatResponseDto> getChatResult(@RequestParam(name = "videoName") String name) {
         return gcsReaderService.getChatResult(name);
         //토픽 모델링으로 비디오 정보 전송
     }
 
-    @GetMapping("/get-decibel-result")
-    public Mono<String> getDecibelResult(@RequestParam(name = "videoName") String name) {
-        return gcsReaderService.getDecibelResult(name);
-        //토픽 모델링으로 비디오 정보 전송
-    }
+//    @GetMapping("/get-decibel-result")
+//    public Mono<String> getDecibelResult(@RequestParam(name = "videoName") String name) {
+//        return gcsReaderService.getDecibelResult(name);
+//        //토픽 모델링으로 비디오 정보 전송
+//    }
 }
 
 
