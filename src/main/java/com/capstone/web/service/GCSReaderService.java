@@ -1,5 +1,6 @@
 package com.capstone.web.service;
 
+import com.capstone.web.dto.ScriptResponseDto;
 import com.capstone.web.dto.VideoResponseDto;
 import com.google.api.client.util.Lists;
 import com.google.api.gax.paging.Page;
@@ -7,6 +8,7 @@ import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import org.springframework.beans.factory.annotation.Autowired;
+import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
@@ -39,20 +41,20 @@ public class GCSReaderService {
                 .collect(Collectors.toList());
     }
 
-    public Mono<String> getExtractionResult(String name) {
-        WebClient webClient = builder.build();
+    public Mono<ScriptResponseDto> getScriptResult(String name) {
+        WebClient webClient = builder.baseUrl("http://localhost:5000").build();
         return webClient.get()
-                .uri(uriBuilder -> uriBuilder.path("http://localhost:5000/script-api")
+                .uri(uriBuilder -> uriBuilder.path("/script-api")
                         .queryParam("fileName", name)
                         .build())
                 .retrieve()
-                .bodyToMono(String.class);
+                .bodyToMono(ScriptResponseDto.class);
     }
 
     public Mono<String> getChatResult(String name) {
-        WebClient webCilent = builder.build();
+        WebClient webCilent = builder.baseUrl("http://chathost:5000").build();
         return webCilent.get()
-                .uri(uriBuilder -> uriBuilder.path("http://localhost:5000/chat-api")
+                .uri(uriBuilder -> uriBuilder.path("/chat-api")
                 .queryParam("fileName", name)
                 .build())
                 .retrieve()
