@@ -53,7 +53,7 @@ public class GCSReaderService {
     }
 
     public Mono<ChatResponseDto> getChatResult(String name) {
-        WebClient webCilent = builder.baseUrl("http://chathost:5000").build();
+        WebClient webCilent = builder.baseUrl("http://localhost:5000").build();
         return webCilent.get()
                 .uri(uriBuilder -> uriBuilder.path("/chat-api")
                 .queryParam("fileName", name)
