@@ -21,7 +21,7 @@ import java.util.stream.Collectors;
 
 @Service
 public class GCSReaderService {
-
+    private static final String storageName = "capstone-sptt-storage";
     private final Storage storage;
 
     @Autowired
@@ -32,8 +32,9 @@ public class GCSReaderService {
         this.storage = storage;
     }
 
-    public List<VideoResponseDto> getAllVideos(String userName) {
-        Bucket bucket = storage.get(userName, Storage.BucketGetOption.fields(Storage.BucketField.values()));
+    public List<VideoResponseDto> getAllVideos() {
+
+        Bucket bucket = storage.get(storageName, Storage.BucketGetOption.fields(Storage.BucketField.values()));
         return Lists.newArrayList(bucket.list().iterateAll())
                 .stream()
                 .filter(this::isVideo)
@@ -52,12 +53,11 @@ public class GCSReaderService {
     }
 
     public Mono<ChatResponseDto> getChatResult(String name) {
-        WebClient webCilent = builder.baseUrl("http://chathost:5000").build();
+        WebClient webCilent = builder.baseUrl("http://localhost:5000").build();
         return webCilent.get()
                 .uri(uriBuilder -> uriBuilder.path("/chat-api")
                 .queryParam("fileName", name)
                 .build())
-                .accept(MediaType.ALL)
                 .retrieve()
                 .bodyToMono(ChatResponseDto.class).log();
     }

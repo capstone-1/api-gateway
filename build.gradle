@@ -2,7 +2,11 @@ plugins {
     id 'org.springframework.boot' version '2.2.6.RELEASE'
     id 'io.spring.dependency-management' version '1.0.9.RELEASE'
     id 'java'
+    id 'com.google.cloud.tools.jib' version '2.1.0'
 }
+
+apply plugin : 'com.google.cloud.tools.jib'
+
 
 group = 'com.capstone'
 version = '0.0.1-SNAPSHOT'
@@ -18,7 +22,13 @@ repositories {
     mavenCentral()
 }
 
+ext {
+    set('gcr', "asia.gcr.io")
+    set('projectName', 'static-protocol-264107')
+}
+
 dependencies {
+    implementation 'org.springframework.boot:spring-boot-actuator'
     implementation platform("com.google.cloud:libraries-bom:4.0.0");
     implementation 'com.google.cloud:google-cloud-storage'
     implementation 'org.springframework.boot:spring-boot-starter-data-jpa'
@@ -36,4 +46,10 @@ dependencies {
 
 test {
     useJUnitPlatform()
+}
+
+jib {
+    to {
+        image = "${gcr}/${projectName}/" + "${bootJar.baseName}:${bootJar.version}"
+    }
 }

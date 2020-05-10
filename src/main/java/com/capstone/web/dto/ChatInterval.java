@@ -9,7 +9,6 @@ import lombok.Setter;
 @Getter
 @Setter
 @NoArgsConstructor
-@JsonDeserialize(as = ChatIntervalDeserializer.class)
 public class ChatInterval {
     private Integer start;
     private Integer end;

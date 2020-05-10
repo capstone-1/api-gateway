@@ -18,6 +18,5 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ChatResponseDto {
     private String chat_frequency_url;
-    @JsonFormat(with = JsonFormat.Feature.ACCEPT_SINGLE_VALUE_AS_ARRAY)
     private List<ChatInterval> chat_edit_list = new ArrayList<>();
 }
