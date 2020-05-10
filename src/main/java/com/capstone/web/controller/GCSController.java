@@ -20,8 +20,8 @@ public class GCSController {
 
 
     @GetMapping("/get-all-videos")
-    public List<VideoResponseDto> getAllVideos(@RequestParam(name = "storageName") String name) {
-        return gcsReaderService.getAllVideos(name);
+    public List<VideoResponseDto> getAllVideos() {
+        return gcsReaderService.getAllVideos();
     }
 
     //GCS에서 다운 => 자르고 스크립트에 하나씩 생성
