@@ -1,19 +1,17 @@
 package com.capstone.web.service;
 
+import com.capstone.web.dto.EmotionResponseDto;
 import com.capstone.web.dto.ScriptResponseDto;
 import com.capstone.web.dto.VideoResponseDto;
 import com.google.api.client.util.Lists;
-import com.google.api.gax.paging.Page;
 import com.google.cloud.storage.Blob;
 import com.google.cloud.storage.Bucket;
 import com.google.cloud.storage.Storage;
 import org.springframework.beans.factory.annotation.Autowired;
-import org.springframework.http.MediaType;
 import org.springframework.stereotype.Service;
 import org.springframework.web.reactive.function.client.WebClient;
 import reactor.core.publisher.Mono;
 
-import java.util.ArrayList;
 import java.util.Date;
 import java.util.List;
 import java.util.Map;
@@ -49,6 +47,16 @@ public class GCSReaderService {
                         .build())
                 .retrieve()
                 .bodyToMono(ScriptResponseDto.class);
+    }
+
+    public Mono<EmotionResponseDto> getEmotionResult(String name) {
+        WebClient webClient = builder.baseUrl("http://localhost:5000").build();
+        return webClient.get()
+                .uri(uriBuilder -> uriBuilder.path("/emotion-api")
+                        .queryParam("fileName", name)
+                        .build())
+                .retrieve()
+                .bodyToMono(EmotionResponseDto.class);
     }
 
     public Mono<String> getChatResult(String name) {

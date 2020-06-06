@@ -12,13 +12,11 @@ import java.util.List;
 @JsonIgnoreProperties(ignoreUnknown = true)
 public class ScriptResponseDto {
     private String fullScript;
-    private String summary;
     private List<TopicEditItem> topicEditList = new ArrayList<>();
 
     @Builder
-    public ScriptResponseDto(String fullScript, String summary, List<TopicEditItem> topicEditList){
+    public ScriptResponseDto(String fullScript, List<TopicEditItem> topicEditList){
         this.fullScript = fullScript;
-        this.summary = summary;
         this.topicEditList = topicEditList;
     }
 }

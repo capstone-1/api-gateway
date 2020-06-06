@@ -1,5 +1,6 @@
 package com.capstone.web.controller;
 
+import com.capstone.web.dto.EmotionResponseDto;
 import com.capstone.web.dto.ScriptResponseDto;
 import com.capstone.web.dto.VideoResponseDto;
 import com.capstone.web.service.GCSReaderService;
@@ -29,19 +30,21 @@ public class GCSController {
     @GetMapping("/get-script-result")
     public Mono<ScriptResponseDto> getScriptResult(@RequestParam(name = "videoName") String name) {
         return gcsReaderService.getScriptResult(name);
-        //토픽 모델링으로 비디오 정보 전송
+    }
+
+    @GetMapping("/get-emotion")
+    public Mono<EmotionResponseDto> getEmotionResult(@RequestParam(name = "videoName") String name) {
+        return gcsReaderService.getEmotionResult(name);
     }
 
     @GetMapping("/get-chat-result")
     public Mono<String> getChatResult(@RequestParam(name = "videoName") String name) {
         return gcsReaderService.getChatResult(name);
-        //토픽 모델링으로 비디오 정보 전송
     }
 
     @GetMapping("/get-decibel-result")
     public Mono<String> getDecibelResult(@RequestParam(name = "videoName") String name) {
         return gcsReaderService.getDecibelResult(name);
-        //토픽 모델링으로 비디오 정보 전송
     }
 }
 
